@@ -165,9 +165,12 @@ async function showMontantesList() {
   
   if (montantes.length === 0) {
     listEl.innerHTML = `
-      <div class="card text-center text-muted">
-        <p>Aucune montante active.</p>
-        <p class="text-sm mt-2">Créez votre première stratégie pour commencer !</p>
+      <div class="card glass-panel text-center text-muted py-8">
+        <div class="icon-wrapper small mx-auto mb-4 opacity-50">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        </div>
+        <p class="font-outfit font-medium">Aucune stratégie active.</p>
+        <p class="text-sm mt-2 opacity-70">Créez votre première montante pour commencer !</p>
       </div>`;
     return;
   }
@@ -190,11 +193,13 @@ async function showMontantesList() {
 
     item.innerHTML = `
       <div>
-        <div class="font-bold">Objectif: ${m.goal.toLocaleString()} CDF</div>
-        <div class="text-sm text-muted">Capital actuel: ${m.currentCapital.toLocaleString()} CDF</div>
-        <div class="text-xs text-muted mt-1">Étape ${wonSteps}/${totalSteps} • ${statusText}</div>
+        <div class="font-outfit font-bold text-lg">Objectif: ${m.goal.toLocaleString()} CDF</div>
+        <div class="text-sm text-muted mt-1">Capital actuel: <span class="text-white">${m.currentCapital.toLocaleString()} CDF</span></div>
+        <div class="text-xs text-muted mt-2 uppercase tracking-wide">Étape ${wonSteps}/${totalSteps} • <span class="${m.status === 'won' ? 'text-neon' : m.status === 'lost' ? 'text-danger' : 'text-white'}">${statusText}</span></div>
       </div>
-      <div class="text-xl">›</div>
+      <div class="text-muted opacity-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
     `;
     item.addEventListener('click', () => showMontanteDetail(m.id));
     listEl.appendChild(item);
@@ -292,13 +297,16 @@ async function renderMontanteDetail() {
   }
 
   let html = `
-    <div class="card mb-4 text-center">
-      <div class="text-sm text-muted">Progression Objectif</div>
-      <h2 class="neon-text">${m.currentCapital.toLocaleString()} / ${m.goal.toLocaleString()} CDF</h2>
-      <div class="text-xs text-muted mt-1">Cote moyenne visée : ${m.targetOdds}</div>
+    <div class="card glass-panel mb-6 text-center py-6">
+      <div class="text-sm text-muted uppercase tracking-widest font-medium mb-2">Progression</div>
+      <h2 class="font-outfit text-2xl font-bold text-neon drop-shadow-neon">${m.currentCapital.toLocaleString()} <span class="text-muted text-lg font-normal">/ ${m.goal.toLocaleString()} CDF</span></h2>
+      <div class="text-xs text-muted mt-2 bg-black bg-opacity-40 inline-block px-3 py-1 rounded-full border border-gray-800">Cote moyenne : ${m.targetOdds}</div>
     </div>
     
-    <h3 class="mb-2">Étapes</h3>
+    <h3 class="font-outfit font-semibold text-lg mb-4 flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+      Étapes
+    </h3>
   `;
 
   let activeStepFound = false;
@@ -317,22 +325,31 @@ async function renderMontanteDetail() {
 
     html += `
       <div class="${cardClass}">
-        <div class="flex justify-between items-center" style="display:flex; justify-content:space-between;">
-          <div class="font-bold">Palier ${s.step}</div>
-          <div class="text-sm">Mise: <span class="text-white font-bold">${s.stake.toLocaleString()} CDF</span></div>
+        <div class="flex justify-between items-center mb-2">
+          <div class="font-outfit font-semibold">Palier ${s.step}</div>
+          <div class="text-sm text-muted">Mise: <span class="text-white font-bold">${s.stake.toLocaleString()} CDF</span></div>
         </div>
-        <div class="text-sm text-muted mt-1">Cote: ${s.odds} | Retour attendu: ${s.expectedReturn.toLocaleString()} CDF</div>
+        <div class="text-xs text-muted bg-black bg-opacity-20 p-2 rounded-lg mb-3">
+          Cote: <strong class="text-white">${s.odds}</strong> <span class="mx-2 opacity-50">|</span> 
+          Retour: <strong class="text-white">${s.expectedReturn.toLocaleString()} CDF</strong>
+        </div>
         
         ${isCurrentStep ? `
-          <div class="mt-3" style="display:flex; gap:10px;">
-            <button class="btn-step-action btn-step-win flex-1" style="flex:1;" onclick="validateStep(${index}, 'won')">Gagné ✓</button>
-            <button class="btn-step-action btn-step-loss flex-1" style="flex:1;" onclick="validateStep(${index}, 'lost')">Perdu ✗</button>
+          <div class="flex gap-3 mt-3">
+            <button class="btn-step-action btn-step-win flex-1 flex items-center justify-center gap-2" onclick="validateStep(${index}, 'won')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Gagné
+            </button>
+            <button class="btn-step-action btn-step-loss flex-1 flex items-center justify-center gap-2" onclick="validateStep(${index}, 'lost')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              Perdu
+            </button>
           </div>
         ` : ''}
         
         ${s.status !== 'pending' ? `
-           <div class="text-xs mt-2 text-right ${s.status === 'won' ? 'text-neon' : 'text-danger'}">
-              Statut: ${s.status === 'won' ? 'Validé' : 'Échoué'}
+           <div class="text-xs mt-2 text-right font-medium uppercase tracking-wider ${s.status === 'won' ? 'text-neon' : 'text-danger'}">
+              ${s.status === 'won' ? '✓ Validé' : '✗ Échoué'}
            </div>
         ` : ''}
       </div>
@@ -340,12 +357,12 @@ async function renderMontanteDetail() {
   });
 
   if (m.status === 'won') {
-    html += `<div class="card text-center neon-text font-bold mt-4">Montante Complétée ! Objectif Atteint.</div>`;
+    html += `<div class="card glass-panel text-center text-neon font-outfit font-bold mt-6 py-6 border-neon drop-shadow-neon">Montante Complétée ! Objectif Atteint 🏆</div>`;
   } else if (m.status === 'lost') {
-    html += `<div class="card text-center text-danger font-bold mt-4">Montante Échouée.</div>`;
+    html += `<div class="card glass-panel text-center text-danger font-outfit font-bold mt-6 py-6 border-danger-glass">Montante Échouée 💥</div>`;
   }
 
-  html += `<button class="btn-danger w-full mt-4" onclick="deleteMontante('${m.id}')">Supprimer la montante</button>`;
+  html += `<button class="btn-danger w-full mt-6" onclick="deleteMontante('${m.id}')">Supprimer la stratégie</button>`;
 
   container.innerHTML = html;
 }
