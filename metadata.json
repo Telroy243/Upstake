@@ -1,0 +1,6 @@
+{
+  "name": "UPSTAKE",
+  "description": "Stratégies de paris et analyse IA",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

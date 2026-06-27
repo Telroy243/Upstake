@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>UPSTAKE (Montante Neon)</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <meta name="theme-color" content="#0D0D0D" />
+  </head>
+  <body>
+    <!-- Install Prompt Modal -->
+    <div id="install-modal" class="fullscreen-modal hidden">
+      <div class="modal-content">
+        <h2>🔥 UPSTAKE NEON</h2>
+        <p>Installez l'application pour une expérience optimale, rapide et 100% hors-ligne !</p>
+        <button id="btn-install" class="btn-neon">Installer l'application</button>
+        <button id="btn-close-install" class="btn-text">Plus tard</button>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1>UPSTAKE <span class="neon-text">NEON</span></h1>
+    </header>
+
+    <!-- Main Content (SPA Views) -->
+    <main id="app-main">
+      
+      <!-- VIEW: MONTANTES -->
+      <section id="view-montantes" class="view active">
+        
+        <div id="montantes-list-container">
+          <button id="btn-new-montante" class="btn-neon w-full mb-4">+ Créer une montante</button>
+          <div id="montantes-list"></div>
+        </div>
+
+        <div id="montante-create-container" class="hidden">
+          <button id="btn-back-montantes" class="btn-text mb-4">← Retour</button>
+          <div class="card form-card">
+            <h3>Nouvelle Montante</h3>
+            <div class="form-group">
+              <label>Capital de départ (CDF)</label>
+              <input type="number" id="input-start-capital" placeholder="Ex: 5000">
+            </div>
+            <div class="form-group">
+              <label>Objectif final (CDF)</label>
+              <input type="number" id="input-goal" placeholder="Ex: 50000">
+            </div>
+            <div class="form-group">
+              <label>Cote moyenne visée</label>
+              <input type="number" step="0.01" id="input-odds" placeholder="Ex: 1.5">
+            </div>
+            <button id="btn-save-montante" class="btn-neon w-full mt-4">Générer la stratégie</button>
+          </div>
+        </div>
+
+        <div id="montante-detail-container" class="hidden">
+           <button id="btn-back-detail" class="btn-text mb-4">← Retour</button>
+           <div id="montante-detail-content"></div>
+        </div>
+
+      </section>
+
+      <!-- VIEW: ANALYSE -->
+      <section id="view-analyse" class="view hidden">
+        <div class="card form-card">
+          <h3>IA Prédictive Gemini</h3>
+          <p class="text-sm text-muted mb-4">Analysez vos coupons pour obtenir un avis et un niveau de risque.</p>
+          
+          <div class="form-group">
+            <label>Détails du coupon (Texte)</label>
+            <textarea id="input-coupon-text" rows="4" placeholder="Ex: Victoire de Real Madrid, Plus de 2.5 buts..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Ou uploader une image (Optionnel)</label>
+            <input type="file" id="input-coupon-img" accept="image/*" class="file-input">
+          </div>
+          
+          <button id="btn-analyze" class="btn-neon w-full mt-2">Analyser avec l'IA</button>
+        </div>
+
+        <div id="analyse-result-container" class="card mt-4 hidden">
+          <h4 class="neon-text mb-2">Résultat de l'analyse</h4>
+          <div id="analyse-result-content"></div>
+        </div>
+      </section>
+
+      <!-- VIEW: STATS -->
+      <section id="view-stats" class="view hidden">
+        <div class="card mb-4 text-center">
+          <h3 class="text-muted text-sm">Bénéfice Net Total</h3>
+          <h2 id="stat-profit" class="neon-text text-2xl mt-2">0 CDF</h2>
+        </div>
+
+        <div class="stats-grid mb-4">
+          <div class="card stat-card">
+            <div class="text-muted text-xs">Montantes Réussies</div>
+            <div id="stat-won" class="text-xl font-bold mt-1">0</div>
+          </div>
+          <div class="card stat-card">
+            <div class="text-muted text-xs">Montantes Échouées</div>
+            <div id="stat-lost" class="text-xl font-bold mt-1 text-danger">0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 class="mb-2">Taux de Réussite</h4>
+          <div class="progress-bar-container">
+            <div id="stat-success-bar" class="progress-bar" style="width: 0%;"></div>
+          </div>
+          <div id="stat-success-text" class="text-right text-sm mt-1">0%</div>
+        </div>
+      </section>
+
+      <!-- VIEW: PARAMÈTRES -->
+      <section id="view-settings" class="view hidden">
+        <div class="card form-card mb-4">
+          <h3>Configuration IA</h3>
+          <div class="form-group">
+            <label>Clé API Gemini</label>
+            <input type="password" id="input-api-key" placeholder="AIzaSy...">
+          </div>
+          <div class="form-group">
+            <label>Modèle IA</label>
+            <select id="select-ai-model">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Rapide)</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro (Précis)</option>
+            </select>
+          </div>
+          <button id="btn-save-settings" class="btn-neon w-full mt-2">Sauvegarder</button>
+        </div>
+
+        <div class="card form-card danger-zone">
+          <h3 class="text-danger">Zone de Danger</h3>
+          <p class="text-sm text-muted mb-4">Attention, cette action supprimera toutes vos montantes et statistiques locales de façon irréversible.</p>
+          <button id="btn-reset-data" class="btn-danger w-full">Réinitialiser les données</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-target="view-montantes">
+        <span class="icon">🎌</span>
+        <span class="label">Montantes</span>
+      </button>
+      <button class="nav-item" data-target="view-analyse">
+        <span class="icon">🔍</span>
+        <span class="label">Analyse</span>
+      </button>
+      <button class="nav-item" data-target="view-stats">
+        <span class="icon">📊</span>
+        <span class="label">Stats</span>
+      </button>
+      <button class="nav-item" data-target="view-settings">
+        <span class="icon">⚙️</span>
+        <span class="label">Paramètres</span>
+      </button>
+    </nav>
+
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
